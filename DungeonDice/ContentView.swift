@@ -43,8 +43,14 @@ struct ContentView: View {
                 .font(.largeTitle)
                 .fontWeight(.medium)
                 .multilineTextAlignment(.center)
+                .rotation3DEffect(isDoneAnimating ? .degrees(360) : .degrees(0), axis: (x:1, y:0, z:0), anchor: .center, anchorZ: 0, perspective: (5.5))
                 .frame(height: 150)
-                .animation(.default, value: animationToggle)
+                .onChange(of: animationToggle) {
+                    isDoneAnimating = false
+                    withAnimation(.interpolatingSpring(duration: 0.6, bounce: 0.4)) {
+                        isDoneAnimating = true
+                    }
+                }
             Spacer()
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 102))]) {
                 ForEach(Dice.allCases) { die in
