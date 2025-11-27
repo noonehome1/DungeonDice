@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    enum Dice: Int, CaseIterable {
+    enum Dice: Int, CaseIterable, Identifiable {
         case four = 4
         case six = 6
         case eight = 8
@@ -17,12 +17,20 @@ struct ContentView: View {
         case twenty = 20
         case hundred = 100
         
+        var id: Int {
+            return self.rawValue
+        }
+        var description: String {
+            return "\(self.rawValue)-sided"
+        }
         func roll() -> Int {
             return Int.random(in: 1...self.rawValue)
         }
     }
     
     @State private var rollMessage = ""
+    @State private var animationToggle: Bool = false
+    @State private var isDoneAnimating: Bool = true
     
     var body: some View {
         VStack {
@@ -36,65 +44,20 @@ struct ContentView: View {
                 .fontWeight(.medium)
                 .multilineTextAlignment(.center)
                 .frame(height: 150)
+                .animation(.default, value: animationToggle)
             Spacer()
-            ForEach(Dice.allCases, id: \.self) { die in
-//                Button {
-//                    rollMessage = "You rolled a \(die.roll()) on the \(die)-sided die."
-//                } label: {
-//                    Text("\(die.rawValue)-sided die")
-//                }
-                Button("\(die.rawValue)-sided die") {
-                    rollMessage = "You rolled a \(die.roll()) on the \(die)-sided die."
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 102))]) {
+                ForEach(Dice.allCases) { die in
+                    Button(die.description) {
+                        rollMessage = "You rolled a \(die.roll()) on the \(die)-sided die."
+                        animationToggle.toggle()
+                    }
+                    
                 }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
             }
-
-//            Group {
-//                HStack {
-//                    Button {
-//                        rollMessage = "You rolled a \(Dice.four.roll()) on the \(Dice.four)-sided die."
-//                    } label: {
-//                        Text("\(Dice.four.rawValue)-sided die")
-//                    }
-//                    Button {
-//                        rollMessage = "You rolled a \(Dice.six.roll()) on the \(Dice.six)-sided die."
-//                    } label: {
-//                        Text("\(Dice.six.rawValue)-sided die")
-//                    }
-//                    Button {
-//                        rollMessage = "You rolled a \(Dice.eight.roll()) on the \(Dice.eight)-sided die."
-//                    } label: {
-//                        Text("\(Dice.eight.rawValue)-sided die")
-//                    }
-//                }
-//                HStack {
-//                    Button {
-//                        rollMessage = "You rolled a \(Dice.ten.roll()) on the \(Dice.ten)-sided die."
-//                    } label: {
-//                        Text("\(Dice.ten.rawValue)-sided die")
-//                    }
-//                    Button {
-//                        rollMessage = "You rolled a \(Dice.twelve.roll()) on the \(Dice.twelve)-sided die."
-//                    } label: {
-//                        Text("\(Dice.twelve.rawValue)-sided die")
-//                    }
-//                    Button {
-//                        rollMessage = "You rolled a \(Dice.twenty.roll()) on the \(Dice.twenty)-sided die."
-//                    } label: {
-//                        Text("\(Dice.twenty.rawValue)-sided die")
-//                    }
-//                }
-//                Button {
-//                    rollMessage = "You rolled a \(Dice.hundred.roll()) on the \(Dice.hundred)-sided die."
-//                } label: {
-//                    Text("\(Dice.hundred.rawValue)-sided die")
-//                }
-//            }
-//            .font(.caption)
-//            .buttonStyle(.borderedProminent)
-//            .tint(.red)
-
-
-
+            
         }
         .padding()
     }
